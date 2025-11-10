@@ -1,4 +1,6 @@
 const express = require('express');
+const cors = require('cors')
+
 const app = express();
 const port = 3000;
 
@@ -8,7 +10,16 @@ let users = [
     { id: 3, name: 'Charlie', age: 35 } 
 ];
 
-app.get('/', (req, res) => {
+function requestLogger(req, res, next) {
+  const timestamp = new Date().toISOString();
+  console.log(`${timestamp} - ${req.method} ${req.url}`);
+  next(); // Don't forget to call next()
+}
+
+app.use(requestLogger);
+app.use(cors())
+
+app.get('/' , (req, res) => {
   res.send('Hello from Express!\n');
 });
 
@@ -20,7 +31,7 @@ app.post('/users', express.json(), (req, res) => {
   const newUser = req.body;
   newUser.id = users.length + 1;
   users.push(newUser);
-  console.log(req.body);
+  //console.log(req.body);
   res.status(201).json(newUser);
 });
 
